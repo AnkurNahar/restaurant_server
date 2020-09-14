@@ -53,10 +53,32 @@ router.get('/logout', (req, res) => {
   }
 });
 
-router.put('/update', (req, res) => {
-  
+router.put('/update', async (req, res, next) => {
 
-  if(!req.body.userID||
+
+  try {
+    if(!req.body.userID||
+      !req.body.userName||
+      !req.body.email||
+      !req.body.address){ // checking for userID, userName, email and address in req body
+      res.status(400);
+      res.json({message: "Bad Request"});
+    } else { //updating user info
+      const sql = "UPDATE user SET `userName` = ?, `email` = ?, `address` = ? WHERE `userID` = ?";
+      const result = await db.query(sql, [req.body.userName, req.body.email, req.body.address, req.body.userID])
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({message: "Updated"});
+    }
+    
+  } catch (error) {
+    return next(error);
+  }
+
+
+  
+//using callback
+ /* if(!req.body.userID||
     !req.body.userName||
     !req.body.email||
     !req.body.address){ // checking for userID, userName, email and address in req body
@@ -72,14 +94,32 @@ router.put('/update', (req, res) => {
           res.setHeader('Content-Type', 'application/json');
           res.json({message: "Updated"});
         });
-  }
+  } */
 
 });
 
-router.delete('/remove', (req, res) => {
+router.delete('/remove', async (req, res, next) => {
 
+
+  try {
+    if(!req.body.userID){ // checking for userID, userName, email and address in req body
+      res.status(400);
+      res.json({message: "Bad Request"});
+    } else { //updating user info
+      const sql = "DELETE FROM user WHERE `userID` = ?";
+      const result = await db.query(sql, [req.body.userID])
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({message: "User Deleted"});
+    }
+    
+  } catch (error) {
+    return next(error);
+  } 
   
-  if(!req.body.userID){ // checking for userID in req body
+
+  //using callback
+  /* if(!req.body.userID){ // checking for userID in req body
     res.status(400);
     res.json({message: "Bad Request"});
   } else { //deleting user
@@ -92,7 +132,7 @@ router.delete('/remove', (req, res) => {
           res.setHeader('Content-Type', 'application/json');
           res.json(result);
         });
-  }
+  } */
 
   
   

@@ -1,13 +1,28 @@
+const util = require( 'util' );
 var mysql = require('mysql');
-var connection = mysql.createConnection({
+
+var config = {
     host     : 'localhost',
     user     : 'root',
     password : '',
     database : 'restaurant'
-});
+};
 
-connection.connect(function(err) {
-    if (err) throw err;
-});
 
-module.exports = connection;
+function makeDb( config ) {
+    const connection = mysql.createConnection( config );
+    return {
+      query( sql, args ) {
+        return util.promisify( connection.query )
+          .call( connection, sql, args );
+      },
+      close() {
+        return util.promisify( connection.end ).call( connection );
+      }
+    };
+  }
+
+const db = makeDb(config);
+
+module.exports = db;
+

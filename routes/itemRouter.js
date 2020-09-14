@@ -12,20 +12,22 @@ itemRouter.use(bodyParser.json());
 
 //for /items
 itemRouter.route('/')
-.get((req,res,next) => {
+.get( async (req,res,next) => {
     //querying DB for all items
-
-    var sql = "SELECT * FROM item";
     
-        db.query(sql, function (err, result, fields) {
-          if (err) throw err;
-          res.statusCode = 200;
-          res.setHeader('Content-Type', 'application/json');
-          res.json(result);
-        });
+    try {
+      const sql = "SELECT * FROM item";
+      const result = await db.query(sql);
+      res.setHeader('Content-Type', 'application/json');
+      res.statusCode = 200;
+      res.json(result); 
       
+    } catch (error) {
+      return next(error);
+    }
+      
+ });
 
-});
 
 
 
