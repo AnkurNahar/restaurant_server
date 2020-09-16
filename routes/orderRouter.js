@@ -1,84 +1,83 @@
-const express = require('express');
-const bodyParser = require('body-parser');
+const express = require("express");
+const bodyParser = require("body-parser");
 const mailgun = require("mailgun-js");
-var db  = require('../db_connection');
+var db = require("../db_connection");
+const autenticate = require('../authenticate');
 
 
 const orderRouter = express.Router();
-const DOMAIN = 'sandbox68e8d49e4d5340fea3e662585617e15b.mailgun.org';
-const mg = mailgun({apiKey:'1c56eb7b457a32eeda4f818fc092223e-0f472795-11c55c24', domain: DOMAIN});
-const data = {
-	from: 'Excited User <me@samples.mailgun.org>',
-	to: 'ankurnahar.an@gmail.com',
-	subject: 'Hello',
-	text: 'Testing some Mailgun awesomness!'
-};
+
+//mailgun config
+const DOMAIN = "sandbox68e8d49e4d5340fea3e662585617e15b.mailgun.org";
+const mg = mailgun({
+  apiKey: "1c56eb7b457a32eeda4f818fc092223e-0f472795-11c55c24",
+  domain: DOMAIN,
+});
 
 //allows parsing of response body in JSON format
 orderRouter.use(bodyParser.json());
 
 //placing order
-orderRouter.route('/')
-.post(async (req,res,next) => {
-    //get recipt 
+orderRouter.route("/").post(autenticate.authenticateToken, async (req, res, next) => {
+  try {
+    if (!req.body.userID || !req.body.items) {// checking for userID and items array in req body
+      res.status(400);
+      res.json({ message: "Bad Request" });
+    } else {
+      
+      //adding order to order table
+      const sql1 = "INSERT INTO orders SET `userID` = ?";
+      const result1 = await db.query(sql1, [req.body.userID]);
 
-    try {
-        if(!req.body.userID||
-           !req.body.items){ // checking for userID and items array in req body
-          res.status(400);
-          res.json({message: "Bad Request"});
-        } else { 
-          //adding order to order table
-          const sql1 = "INSERT INTO orders SET `userID` = ?";
-          const result1 = await db.query(sql1, [req.body.userID])
+      //adding items to orderitems table
+      const orderID = result1.insertId;
+      const sql2 = "INSERT INTO orderitems SET `orderID` = ?, `itemID` = ?, `quantity` = ?  ";
 
-          //adding items to orderitems table
-          const orderID = result1.insertId;
-          const sql2 = "INSERT INTO orderitems SET `orderID` = ?, `itemID` = ?, `quantity` = ?  "; 
-          
-          function insertItem (){
-            req.body.items.forEach(item => {
-                let result2 = db.query(sql2, [orderID, item.itemID, item.quantity])
-              });
-          }
-          const insert = await insertItem();
-          
-          //getting ordered items price and quantity
-          const sql3 = "SELECT item.price AS price, orderitems.quantity AS quantity FROM orderitems INNER JOIN item ON orderitems.itemID = item.itemID WHERE `orderID` = ?"
-          const result3 = await db.query(sql3, [orderID])
-
-          //calculating total cost
-          let total = 0.0;
-          function calcCost (){
-            result3.forEach(item => {
-                total += item.price*item.quantity;
-              });
-          }
-          const calculate = await calcCost();
-
-         
-          res.statusCode = 200;
-          res.setHeader('Content-Type', 'application/json');
-         //res.json({message: "Order Confirmeed"});
-          res.json(result3);
-        }
-        
-      } catch (error) {
-        return next(error);
+      function insertItem() {
+        req.body.items.forEach((item) => {
+          let result2 = db.query(sql2, [orderID, item.itemID, item.quantity]);
+        });
       }
-});
+      const insert = await insertItem();
 
-//placing order
-orderRouter.route('/mail')
-.post((req,res,next) => {
-    //get recipt 
+      //getting ordered items price and quantity
+      const sql3 =
+        "SELECT item.itemName AS name, item.price AS price, orderitems.quantity AS quantity FROM orderitems INNER JOIN item ON orderitems.itemID = item.itemID WHERE `orderID` = ?";
+      const result3 = await db.query(sql3, [orderID]);
 
-mg.messages().send(data, function (error, body) {
-    if(error) {
-    console.log(error);
+      //calculating total cost
+      let total = 0.0;
+      let cost = 0.0;
+      result3.forEach((item) => {
+        cost = item.price * item.quantity;
+        item.cost = cost;
+        total += cost;
+      });
+
+    
+     //sending mail
+      const data = {
+        from: "Excited User <me@samples.mailgun.org>",
+        to: "ankurnahar.an@gmail.com",
+        subject: "Hello",
+        text: "Total: " + total,
+        html: "<html><body><h1>Total: "+ total +"</h1></body></html>"
+      };
+
+      mg.messages().send(data, function (error, body) {
+        if (error) {
+          console.log(error);
+        }
+        console.log(body);
+      });
+
+      res.statusCode = 200;
+      res.setHeader("Content-Type", "application/json");
+      res.json({result3, totalCost: total });
     }
-	console.log(body);
-});
+  } catch (error) {
+    return next(error);
+  }
 });
 
 

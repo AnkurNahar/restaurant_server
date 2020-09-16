@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 var db  = require('../db_connection');
-
+const autenticate = require('../authenticate');
 
 const itemRouter = express.Router();
 
@@ -12,7 +12,7 @@ itemRouter.use(bodyParser.json());
 
 //for /items
 itemRouter.route('/')
-.get( async (req,res,next) => {
+.get( autenticate.authenticateToken, async (req,res,next) => {
     //querying DB for all items
     
     try {
