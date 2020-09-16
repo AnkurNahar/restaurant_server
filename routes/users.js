@@ -11,7 +11,7 @@ router.use(bodyParser.json());
 //to generate acccess token
 function generateAccessToken(user) {
   console.log(user)
-  return jwt.sign(user, 'secret', { expiresIn: '35s' })
+  return jwt.sign(user, 'secret', { expiresIn: '5m' })
 }
 
 router.post("/login", async (req, res, next) => {

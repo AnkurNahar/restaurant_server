@@ -45,6 +45,13 @@ orderRouter.route("/").post(autenticate.authenticateToken, async (req, res, next
         "SELECT item.itemName AS name, item.price AS price, orderitems.quantity AS quantity FROM orderitems INNER JOIN item ON orderitems.itemID = item.itemID WHERE `orderID` = ?";
       const result3 = await db.query(sql3, [orderID]);
 
+      const sql4 = "SELECT email from user WHERE `userID` = ?"
+      const result4 = await db.query(sql4,[req.body.userID]);
+
+      const recipient = result4[0].email;
+
+      console.log(recipient)
+
       //calculating total cost
       let total = 0.0;
       let cost = 0.0;
@@ -57,11 +64,15 @@ orderRouter.route("/").post(autenticate.authenticateToken, async (req, res, next
     
      //sending mail
       const data = {
-        from: "Excited User <me@samples.mailgun.org>",
-        to: "ankurnahar.an@gmail.com",
-        subject: "Hello",
-        text: "Total: " + total,
-        html: "<html><body><h1>Total: "+ total +"</h1></body></html>"
+        from: "Restaurant <me@samples.mailgun.org>",
+        to: recipient,
+        subject: "Order Confirmation",
+        html: "<html>"+
+        "<body>"+
+        "<h3>Your order was placed successfully!</h3>"+
+        "<h1>Total Price: "+ total +"</h1>"+
+        "</body>"+
+        "</html>"
       };
 
       mg.messages().send(data, function (error, body) {
