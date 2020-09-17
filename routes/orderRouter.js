@@ -70,7 +70,7 @@ orderRouter.route("/").post(autenticate.authenticateToken, async (req, res, next
         html: "<html>"+
         "<body>"+
         "<h3>Your order was placed successfully!</h3>"+
-        "<h1>Total Price: "+ total +"</h1>"+
+        "<h1>Total Price: "+ total +"TK</h1>"+
         "</body>"+
         "</html>"
       };
