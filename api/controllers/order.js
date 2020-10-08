@@ -1,7 +1,9 @@
-
+const orderService = require('../../services/OrderService');
 
 const placeOrder = async (req, res) => {
-    return 0;
+
+    const memo = await orderService.placeOrder();
+    return res.status(memo.status).json(memo);
 }
 
 module.exports = {

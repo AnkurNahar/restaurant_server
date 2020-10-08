@@ -1,6 +1,9 @@
+const itemService = require('../../services/ItemService')
 
 const getItems = async (req, res) => {
-    return 0;
+
+    const items = await itemService.getItems();
+    return res.status(items.status).json(items);
 }
 
 module.exports = {
