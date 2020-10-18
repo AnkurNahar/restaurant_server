@@ -56,6 +56,11 @@ const userservice = {
             return { status: 400, msg: 'Bad requst' };
           } 
 
+          const email = await UserList.query().select('id').where({ email: user.email });
+          if(email){
+            return { status: 400, msg: 'Email already in use' };
+          }
+
           //encrypt password
             
           //adding user
@@ -132,7 +137,7 @@ const userservice = {
       } 
 
       await UserList.relatedQuery('token').delete().where({id: userData.userID});
-      
+
       return { status: 200,  msg: "User deleted!" };
 
     } catch (err) {
