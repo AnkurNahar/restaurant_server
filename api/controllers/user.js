@@ -31,10 +31,17 @@ const logoutUser = async (req, res) => {
     return res.status(userLogout.status);
 }
 
+const deleteUser = async (req, res) => {
+
+    const userRemoval = await userService.removeUser(req.body);
+    return res.status(userRemoval.status);
+}
+
 module.exports = {
     loginUser,
     signupUser,
     updateUserInfo,
     generateAccessToken,
-    logoutUser   
+    logoutUser,
+    deleteUser   
 }

@@ -123,6 +123,22 @@ const userservice = {
       return { status: 500, msg: "Internal server error!" };
     }
   },
+
+
+  removeUser: async function (userData){
+    try {
+      if (!userData.userID) {// checking for userID in req body
+        return { status: 400, msg: 'Bad requst' };
+      } 
+
+      await UserList.relatedQuery('token').delete().where({id: userData.userID});
+      
+      return { status: 200,  msg: "User deleted!" };
+
+    } catch (err) {
+      return { status: 500, msg: "Internal server error!" };
+    }
+  }
 };
 
 module.exports = userservice;

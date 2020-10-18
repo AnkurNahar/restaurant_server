@@ -1,4 +1,5 @@
 const userControllers = require('../controllers/user');
+const autenticate = require('../middlewares/authenticate');
 
 const { Router } = require('express');
 
@@ -12,9 +13,11 @@ const userRoutes = (app) => {
 
     router.post('/signup', userControllers.signupUser);
 
-    router.patch('/update', userControllers.updateUserInfo);
+    router.patch('/update', autenticate.authenticateToken, userControllers.updateUserInfo);
 
-    router.delete('/logout', userControllers.logoutUser)
+    router.delete('/logout', autenticate.authenticateToken, userControllers.logoutUser);
+
+    router.delete('/remove', autenticate.authenticateToken, userControllers.deleteUser);
 
     app.use('/users', router);
 }
