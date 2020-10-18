@@ -1,4 +1,4 @@
-
+const ItemList = require('../models/Item')
 
 const itemService = {
 
@@ -6,7 +6,7 @@ const itemService = {
 
         try {
 
-            const items = 0;
+            const items = await ItemList.query();
             return { status: 200, items }
 
         } catch(err) {

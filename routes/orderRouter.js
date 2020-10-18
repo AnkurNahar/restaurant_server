@@ -51,7 +51,6 @@ orderRouter.route("/").post(autenticate.authenticateToken, async (req, res, next
       const recipient = result4[0].email;
 
       console.log(recipient)
-
       //calculating total cost
       let total = 0.0;
       let cost = 0.0;
