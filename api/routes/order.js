@@ -1,5 +1,5 @@
 const orderControllers = require('../controllers/order');
-const autenticate = require('../middlewares/authenticate');
+const {authenticateToken} = require('../middlewares/authenticate');
 
 const { Router } = require('express');
 
@@ -7,7 +7,7 @@ const router = Router();
 
 const orderRoutes = (app) => {
 
-    router.post('/', autenticate.authenticateToken, orderControllers.placeOrder);
+    router.post('/', authenticateToken, orderControllers.placeOrder);
 
     app.use('/order', router);
 }

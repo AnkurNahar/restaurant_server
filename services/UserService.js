@@ -45,6 +45,25 @@ const userservice = {
     }
   },
 
+  checkForEmail: async function (user) {
+    try {
+
+      if ( !user.email ) {// checking for email in req body
+        return { status: 400, msg: 'Bad requst' };
+      } 
+
+      const email = await UserList.query().select('id').where({ email: user.email });
+      if(email){
+        return { status: 400, msg: 'Email already in use' };
+      }
+
+     return { status: 200, msg: 'Email not in use' };
+
+    } catch(err) {
+      return { status: 500, msg: "Internal server error!" };
+    }
+  },
+
   signupUser: async function (user) {
     try {
         if (
@@ -55,11 +74,6 @@ const userservice = {
           ) {// checking for userName, password, email and address in req body
             return { status: 400, msg: 'Bad requst' };
           } 
-
-          const email = await UserList.query().select('id').where({ email: user.email });
-          if(email){
-            return { status: 400, msg: 'Email already in use' };
-          }
 
           //encrypt password
             

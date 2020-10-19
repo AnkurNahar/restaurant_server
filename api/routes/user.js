@@ -1,6 +1,8 @@
 const userControllers = require('../controllers/user');
-const autenticate = require('../middlewares/authenticate');
-const validate = require('../middlewares/validator');
+const {authenticateToken} = require('../middlewares/authenticate');
+const {checkEmail} = require('../middlewares/authenticate');
+const {sanitizeForm} = require('../middlewares/validator');
+const {validateSignUp} = require('../middlewares/validator');
 
 const { Router } = require('express');
 
@@ -8,17 +10,17 @@ const router = Router();
 
 const userRoutes = (app) => {
 
-    router.post('/login', validate.sanitizeForm, userControllers.loginUser);
+    router.post('/login', sanitizeForm, userControllers.loginUser);
 
     router.post('/token', userControllers.generateRefreshToken);
 
-    router.post('/signup', validate.sanitizeForm, validate.validateSignUp, userControllers.signupUser);
+    router.post('/signup', sanitizeForm, validateSignUp, checkEmail, userControllers.signupUser);
 
-    router.patch('/update', autenticate.authenticateToken, userControllers.updateUserInfo);
+    router.patch('/update', authenticateToken, userControllers.updateUserInfo);
 
-    router.delete('/logout', autenticate.authenticateToken, userControllers.logoutUser);
+    router.delete('/logout', authenticateToken, userControllers.logoutUser);
 
-    router.delete('/remove', autenticate.authenticateToken, userControllers.deleteUser);
+    router.delete('/remove', authenticateToken, userControllers.deleteUser);
 
     app.use('/users', router);
 }

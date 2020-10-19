@@ -37,11 +37,21 @@ const deleteUser = async (req, res) => {
     return res.status(userRemoval.status);
 }
 
+const checkForEmail = async (req, res) => {
+
+    const emailInfo = await userService.checkForEmail(req.body);
+    return res.status(emailInfo.status);
+    
+    
+}
+
+
 module.exports = {
     loginUser,
     signupUser,
     updateUserInfo,
     generateAccessToken,
     logoutUser,
-    deleteUser   
+    deleteUser,
+    checkForEmail  
 }

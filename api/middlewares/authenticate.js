@@ -1,4 +1,5 @@
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const userControllers = require('../controllers/user');
 
 //to verify access token
 function authenticateToken(req, res, next) {
@@ -14,4 +15,16 @@ function authenticateToken(req, res, next) {
     })
   }
 
-  module.exports.authenticateToken = authenticateToken;
+  //to check if email not used
+  function checkEmail(req, res, next) {
+    const emailInfo = userControllers.checkForEmail;
+    if(emailInfo.status !== 200){
+      return res.sendStatus(emailInfo.status)
+    }
+    next()
+  }
+
+  module.exports = {
+    authenticateToken,
+    checkEmail
+  };
