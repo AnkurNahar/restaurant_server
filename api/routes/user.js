@@ -1,5 +1,6 @@
 const userControllers = require('../controllers/user');
 const autenticate = require('../middlewares/authenticate');
+const validate = require('../middlewares/validator');
 
 const { Router } = require('express');
 
@@ -7,11 +8,11 @@ const router = Router();
 
 const userRoutes = (app) => {
 
-    router.post('/login', userControllers.loginUser);
+    router.post('/login', validate.sanitizeForm, userControllers.loginUser);
 
     router.post('/token', userControllers.generateRefreshToken);
 
-    router.post('/signup', userControllers.signupUser);
+    router.post('/signup', validate.sanitizeForm, validate.validateSignUp, userControllers.signupUser);
 
     router.patch('/update', autenticate.authenticateToken, userControllers.updateUserInfo);
 
