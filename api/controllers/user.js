@@ -9,8 +9,9 @@ const loginUser = async (req, res) => {
 
 const signupUser = async (req, res) => {
 
+    //console.log(req.body);
     const userSignup = await userService.signupUser(req.body);
-    return res.status(userSignup.status);
+    return res.status(userSignup.status).json(userSignup);
 }
 
 const updateUserInfo = async (req, res) => {
@@ -22,6 +23,7 @@ const updateUserInfo = async (req, res) => {
 const generateAccessToken = async (req, res) => {
 
     const accessToken = await userService.generateToken(req.body);
+    console.log("in controller- "+accessToken);
     return res.status(accessToken.status).json(accessToken);
 }
 
@@ -37,13 +39,6 @@ const deleteUser = async (req, res) => {
     return res.status(userRemoval.status);
 }
 
-const checkForEmail = async (req, res) => {
-
-    const emailInfo = await userService.checkForEmail(req.body);
-    return res.status(emailInfo.status);
-    
-    
-}
 
 
 module.exports = {
@@ -52,6 +47,5 @@ module.exports = {
     updateUserInfo,
     generateAccessToken,
     logoutUser,
-    deleteUser,
-    checkForEmail  
+    deleteUser  
 }

@@ -31,8 +31,8 @@ const validateSignUp = (req, res, next) => {
 
     const userFormData = req.body;
 
-    const isValid = signUpSchema.validate(userFormData);
-    console.log('isValid:'+isValid);
+    const isValid = joi.validate(userFormData, signUpSchema);
+    //console.log(isValid);
 
     if (isValid.error) { 
 

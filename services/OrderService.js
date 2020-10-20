@@ -9,18 +9,28 @@ const orderService = {
                 return { status: 400, msg: 'Bad request'  };
               }
 
-              const result = await transaction(Orders.knex(), async trx => {
+              const result = await transaction(Orders.knex(), async (trx) => {
 
                 const result1 = await Orders.query(trx).insert({ userID: orderDetails.userID });
 
-                const orderID = result1.insertId;
+                console.log("result1- "+result1.orderID);
+
+                const orderID = result1.orderID;
+
+                console.log("orderID- "+orderID);
+
+
 
                 //adding items to orderitems table
-                orderDetails.items.forEach(async (item) => {
-                    await OrderItems.query(trx).insert({orderID: orderID, itemID: item.itemID, quantity: item.quantity});
+               const val = orderDetails.items.map(async (item) => {
+                    const value = await OrderItems.query(trx).insert({orderID: orderID, itemID: item.itemID, quantity: item.quantity});
+                    return value;
                 });
 
+                console.log(val);
+
                 const itemArray = await Orders.relatedQuery('item').where({ orderID: orderID});
+                console.log("itemArray: "+itemArray);
                 let total = 0.0;
                 let cost = 0.0;
                 const mappedArray = itemArray.map((item) => {
@@ -31,10 +41,11 @@ const orderService = {
                 return {mappedArray, total: total};
 
               });
-            
-              return {result}
+              console.log(result);
+              return {status: 200,result}
         } catch(err){
             console.log(err);
+            return { status: 500, msg: 'Internal error'  };
         }
     }   
 
