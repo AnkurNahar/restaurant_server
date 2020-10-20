@@ -16,7 +16,7 @@ const orderService = {
                 const orderID = result1.insertId;
 
                 //adding items to orderitems table
-                orderDetails.items.forEach((item) => {
+                orderDetails.items.forEach(async (item) => {
                     await OrderItems.query(trx).insert({orderID: orderID, itemID: item.itemID, quantity: item.quantity});
                 });
 
