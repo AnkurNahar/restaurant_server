@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const UserList = require('../models/User');
 const RefreshTokens = require('../models/RefreshToken');
+const bcrypt = require("bcryptjs");
 
 const userservice = {
   //to generate acccess token
@@ -18,6 +19,7 @@ const userservice = {
        }
 
        //match password
+       
 
         const accessToken = generateAccessToken({user});
         const refreshToken = jwt.sign({user}, 'refresh');
@@ -76,13 +78,15 @@ const userservice = {
           } 
 
           //encrypt password
+          const salt = bcrypt.genSaltSync(10);
+          const hash = bcrypt.hashSync(user.password, salt);
             
           //adding user
           await UserList.query().insert({
             userName: user.userName, 
             email: user.email,
             address: user.address,
-            pass: user.password
+            pass: hash
         });
         return { status: 200, success: true, msg: 'Registration Successful!'};
 
