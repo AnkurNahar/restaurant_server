@@ -16,8 +16,8 @@ const sanitizeForm = (req, res, next) => {
 }
 
 
-const signUpSchema = joi.object().keys({
-    name: joi.string().regex(/^[a-z A-Z]+$/).min(2).required()
+const signUpSchema = joi.object({
+    userName: joi.string().regex(/^[a-z A-Z]+$/).min(2).required()
         .error(() => "Invalid Name!"),
     email: joi.string().email().required()
         .error(() => "Invalid Email!"),
@@ -31,7 +31,8 @@ const validateSignUp = (req, res, next) => {
 
     const userFormData = req.body;
 
-    const isValid = joi.validate(userFormData, signUpSchema);
+    const isValid = signUpSchema.validate(userFormData);
+    console.log('isValid:'+isValid);
 
     if (isValid.error) { 
 
