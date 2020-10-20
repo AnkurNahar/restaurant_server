@@ -19,7 +19,15 @@ const userservice = {
        }
 
        //match password
-       
+       const matchPass = await bcrypt.compare(userData.password, user.password);
+
+       if (!matchPass) {
+ 
+        return {
+            status: 400,
+            msg: "Password does not match"
+        };
+       }
 
         const accessToken = generateAccessToken({user});
         const refreshToken = jwt.sign({user}, 'refresh');
