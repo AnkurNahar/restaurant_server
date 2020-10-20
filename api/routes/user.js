@@ -12,7 +12,7 @@ const userRoutes = (app) => {
 
     router.post('/login', sanitizeForm, userControllers.loginUser);
 
-    router.post('/token', userControllers.generateRefreshToken);
+    router.post('/token', userControllers.generateAccessToken);
 
     router.post('/signup', sanitizeForm, validateSignUp, checkEmail, userControllers.signupUser);
 
