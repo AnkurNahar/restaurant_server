@@ -16,6 +16,7 @@ class Order extends Model{
             item: {
                 modelClass: Item,
                 relation: Model.ManyToManyRelation,
+                filter: builder => builder.select("item.price", "orderitems.quantity", "item.itemName", "item.itemID"),
                 join: {
                     from: 'orders.orderID',
                     through: {

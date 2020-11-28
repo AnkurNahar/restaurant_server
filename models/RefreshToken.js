@@ -9,4 +9,4 @@ class RefreshToken extends Model{
     }
 }
 
-module.exports = User;
+module.exports = RefreshToken;
